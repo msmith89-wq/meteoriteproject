@@ -1,0 +1,102 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(plotly)
+library(leaflet)
+```
+
+
+```{r}
+meteorite_landings <- read_csv('../data/Meteorite_Landings_20250126.csv')
+meteorite_landings
+```
+
+```{r}
+meteorite_landings |> 
+ filter(nametype == 'Relict')
+```
+
+```{r}
+meteorite_landings |> 
+  distinct(fall)
+```
+
+
+```{r}
+fireball_bolides <- read_csv('../data/Fireball_And_Bolide_Reports_20250126.csv')
+fireball_bolides
+```
+
+```{r}
+meteorite_type_count <- meteorite_landings |> 
+  count(recclass) |> 
+  rename(count = `n`) |> 
+  arrange(desc(count))
+
+meteorite_type_count
+  
+  
+```
+L6 meteorites are the most common type of meteorites that land, which are chondrite meteorites. Chrondrite meteorites are stony or non-metallic meteorites that tend to not come from celestial bodies not large enough to undergo melting or planetary differentiation.
+
+Lower limit to fireball events?
+
+```{r}
+fireball_bolides |> 
+  arrange(`Altitude (km)`)
+```
+
+The lowest altitude of a fireball/bolide event from the dataset is 18.7 km, or approximately 11.6 miles.
+There is actually no lower altitude limit to bolides that happen in the sky.
+
+Is there a correlation between the altitude of bolide events and total radiated energy of bolide events?
+
+```{r}
+fireball_bolides <- fireball_bolides |> 
+  rename(c(Total_Radiated_Energy_J = `Total Radiated Energy (J)`, Altitude_km = `Altitude (km)`)) 
+  
+  cor(fireball_bolides$Altitude_km, fireball_bolides$Total_Radiated_Energy_J, use = 'complete.obs')
+```
+```{r}
+fireball_bolides |> 
+  ggplot(aes(x = log(Total_Radiated_Energy_J), y = Altitude_km)) + geom_point()
+```
+
+According to the data above, there appears to be a negative correlation between Altitude and Total Radiated Energy, perhaps this has to do with the atmosphere being less dense at higher altitudes, therefore causing less friction between the atmosphere and meteorites and less radiated energy.
+
+What about correlation between Impact Energy and Altitude?
+
+```{r}
+fireball_bolides <- fireball_bolides |> 
+  rename(Calculated_Total_Impact_Energy_kt = `Calculated Total Impact Energy (kt)`) 
+  
+  cor(fireball_bolides$Altitude_km, fireball_bolides$Calculated_Total_Impact_Energy_kt, use = 'complete.obs')
+```
+
+```{r}
+fireball_bolides |> 
+  ggplot(aes(x = log(Calculated_Total_Impact_Energy_kt), y = Altitude_km)) + geom_point()
+```
+The results of the scatterplot above seem to be identical to the scatterplot of Altitude of fireball/bolides vs log of Total Radiated Energy of fireball/bolides.
+
+
+How do the frequency of meteorite landings vary over time?
+
+```{r}
+meteorite_landings |> 
+  ggplot(aes(x = year)) + geom_histogram() + 
+  scale_x_continuous("Year", limits = c(1700, 2024), seq(1700, 2024, by = 50))
+```
+
+What is the mass distribution of meteorites in the dataset?
+
+```{r}
+meteorite_landings |> 
+  ggplot(aes(x = log(`mass (g)`))) + geom_histogram()
+```
+A histogram of the mass of meteorites was extremely right skewed so a histogram of the logarithm of mass was taken above to alleviate the skew, log of mass seems to be slightly right skewed in the histogram.
+
