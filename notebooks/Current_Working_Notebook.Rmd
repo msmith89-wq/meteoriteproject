@@ -7,6 +7,8 @@ output: html_notebook
 library(tidyverse)
 library(plotly)
 library(leaflet)
+library(suntools)
+library(sf)
 ```
 
 
@@ -59,7 +61,7 @@ Is there a correlation between the altitude of bolide events and total radiated 
 fireball_bolides <- fireball_bolides |> 
   rename(c(Total_Radiated_Energy_J = `Total Radiated Energy (J)`, Altitude_km = `Altitude (km)`)) 
   
-  cor(fireball_bolides$Altitude_km, fireball_bolides$Total_Radiated_Energy_J, use = 'complete.obs')
+  cor.test(fireball_bolides$Altitude_km, fireball_bolides$Total_Radiated_Energy_J, use = 'complete.obs')
 ```
 ```{r}
 fireball_bolides |> 
@@ -74,7 +76,7 @@ What about correlation between Impact Energy and Altitude?
 fireball_bolides <- fireball_bolides |> 
   rename(Calculated_Total_Impact_Energy_kt = `Calculated Total Impact Energy (kt)`) 
   
-  cor(fireball_bolides$Altitude_km, fireball_bolides$Calculated_Total_Impact_Energy_kt, use = 'complete.obs')
+  cor.test(fireball_bolides$Altitude_km, fireball_bolides$Calculated_Total_Impact_Energy_kt, use = 'complete.obs')
 ```
 
 ```{r}
@@ -99,4 +101,110 @@ meteorite_landings |>
   ggplot(aes(x = log(`mass (g)`))) + geom_histogram()
 ```
 A histogram of the mass of meteorites was extremely right skewed so a histogram of the logarithm of mass was taken above to alleviate the skew, log of mass seems to be slightly right skewed in the histogram.
+
+Are fireballs/bolides more common during the day when the meteorite is between the Sun and Earth or at night when the meteorite is farther from the Sun's gravitational pull?
+
+```{r}
+fireball_bolides <- fireball_bolides |> 
+  mutate(Latitude = str_remove(`Latitude (Deg)`, "(N|S)$") |> as.numeric(),
+         Longitude = str_remove(`Longitude (Deg)`, "(E|W)$") |> as.numeric())
+fireball_bolides
+```
+
+```{r}
+fireball_bolides <- fireball_bolides |> 
+  mutate(Date = str_extract(`Date/Time - Peak Brightness (UT)`, "^\\d{2}/\\d{2}/\\d{4}")) |> 
+  mutate(Time = str_extract(`Date/Time - Peak Brightness (UT)`, "\\d{2}:\\d{2}:\\d{2}\\s\\w+"))
+fireball_bolides
+```
+
+
+```{r}
+fireball_bolides_sf <- st_as_sf(
+  fireball_bolides |> select(-`Latitude (Deg)`, -`Longitude (Deg)`), 
+  coords = c("Longitude", "Latitude"), 
+  crs = st_crs(4326)
+  ) 
+fireball_bolides_sf
+  
+```
+
+```{r}
+
+ sunrise_tibble <- sunriset(
+    fireball_bolides_sf,
+    as.POSIXct(fireball_bolides_sf$`Date`, tryFormats = '%m/%d/%Y', tz = 'UTC'),
+    direction = 'sunrise',
+    POSIXct.out = TRUE
+  ) |> 
+  select(sunrise_time = time)
+
+```
+
+```{r}
+fireball_bolides_sf <- fireball_bolides_sf |> 
+  bind_cols(sunrise_tibble)
+```
+
+```{r}
+sunset_tibble <- sunriset(
+    fireball_bolides_sf,
+    as.POSIXct(fireball_bolides_sf$`Date`, tryFormats = '%m/%d/%Y', tz = 'UTC'),
+    direction = 'sunset',
+    POSIXct.out = TRUE
+  ) |> 
+  select(sunset_time = time)
+```
+
+```{r}
+fireball_bolides_sf <- fireball_bolides_sf |> 
+  bind_cols(sunset_tibble)
+fireball_bolides_sf
+```
+
+```{r}
+fireball_bolides_sf <- fireball_bolides_sf |> 
+  mutate(`Date/Time - Peak Brightness (UT)` = as.POSIXct(`Date/Time - Peak Brightness (UT)`, tryFormats = '%m/%d/%Y %I:%M:%S %p'))
+```
+
+```{r}
+fireball_bolides_sf <- fireball_bolides_sf |> 
+  mutate(If_Daytime = between(`Date/Time - Peak Brightness (UT)`, sunrise_time, sunset_time))
+fireball_bolides_sf |> 
+  summarise(mean(If_Daytime, na.rm = TRUE))
+```
+
+```{r}
+ sunrise_day_frac <- sunriset(
+    fireball_bolides_sf,
+    as.POSIXct(fireball_bolides_sf$`Date`, tryFormats = '%m/%d/%Y', tz = 'UTC'),
+    direction = 'sunrise',
+    POSIXct.out = TRUE
+  ) |> 
+  select(day_frac)
+```
+
+```{r}
+sunset_day_frac <- sunriset(
+    fireball_bolides_sf,
+    as.POSIXct(fireball_bolides_sf$`Date`, tryFormats = '%m/%d/%Y', tz = 'UTC'),
+    direction = 'sunset',
+    POSIXct.out = TRUE
+  ) |> 
+  select(day_frac)
+```
+
+```{r}
+(sunset_day_frac - sunrise_day_frac) |> 
+  summarise(mean(day_frac, na.rm = TRUE))
+```
+
+```{r}
+fireball_bolides_sf |>
+  drop_na(If_Daytime) |> 
+  count(If_Daytime) |> 
+  select(n) |> 
+  st_drop_geometry() |> 
+  chisq.test()
+```
 
