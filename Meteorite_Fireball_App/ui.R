@@ -31,19 +31,18 @@ fluidPage(
   mainPanel(
     fluidRow(
       column(width = 6,
-             plotOutput("distPlot", height=plot_heights)
+             plotOutput("radiatePlot", height=plot_heights)
       ),
-      #column(width = 6,
-      # plotOutput("speciesCountPlot", height=plot_heights)
-      #)
-    ),
-    fluidRow(
-      column(width = 12,
-             dataTableOutput("selectedData")
+      column(width = 6,
+             plotOutput("impactPlot", height=plot_heights)
       )
     )
+    #fluidRow(
+    #column(width = 12,
+    #dataTableOutput("selectedData")
+    #)
   )
-)   
-    
-    
-    
+)
+  
+
+
