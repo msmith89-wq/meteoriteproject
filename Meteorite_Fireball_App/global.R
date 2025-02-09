@@ -13,3 +13,6 @@ fireball_bolides <- fireball_bolides |>
   rename(c(Total_Radiated_Energy_J = `Total Radiated Energy (J)`, Altitude_km = `Altitude (km)`, Total_Impact_Energy_kt = `Calculated Total Impact Energy (kt)`))
 
 plot_heights <- "300px"
+
+meteorite_class <- function(recclass_filter){meteorite_landings |> 
+  filter(recclass == recclass_filter)}
