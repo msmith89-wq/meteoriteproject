@@ -70,38 +70,37 @@ fluidPage(
       fluidRow(
         column(width = 3,
                sliderInput("Altitude_Filter", "Select an Altitude Range:", min = min(fireball_bolides$Altitude_km, na.rm = TRUE), max = max(fireball_bolides$Altitude_km, na.rm = TRUE), value = c(19, 59)),
-               sliderInput("Velocity_Filter", "Select a Velocity Range:", min = min(fireball_bolides$`Velocity (km/s)`, na.rm = TRUE), max = max(fireball_bolides$`Velocity (km/s)`, na.rm = TRUE), value = c(16, 19)),
+               #sliderInput("Velocity_Filter", "Select a Velocity Range:", min = min(fireball_bolides$`Velocity (km/s)`, na.rm = FALSE), max = max(fireball_bolides$`Velocity (km/s)`, na.rm = FALSE), value = c(16, 19)),
                sliderInput("Radiated_Energy_Filter", "Select an Energy Range:", min = min(fireball_bolides$Total_Radiated_Energy_J, na.rm = TRUE), max = max(fireball_bolides$Total_Radiated_Energy_J, na.rm = TRUE), value = c(2.20e+10, 2.00e+13
                )),
                sliderInput("Impact_Energy_Filter", "Select an Energy Range:", min = min(fireball_bolides$Total_Impact_Energy_kt, na.rm = TRUE), max = max(fireball_bolides$Total_Impact_Energy_kt, na.rm = TRUE), value = c(0.073, 33)
-               ),
-               column(width = 9, 
-                      tabsetPanel(
-                        tabPanel("Table",
-                                 dataTableOutput("Fireball_Bolides_Data")
-                                 
-                        ),
-                        tabPanel("Map",
-                                 plotlyOutput("Fireball_Bolides_Map")
-                        )
-                      )
-                      
+               )),
+        column(width = 9, 
+               tabsetPanel(
+                 tabPanel("Table",
+                          dataTableOutput("Fireball_Bolides_Data")
+                          
+                 ),
+                 tabPanel("Map",
+                          plotlyOutput("Fireball_Bolides_Map")
+                 )
                )
-               )
+               
         )
-        
       )
     )
+    
   )
+)
 
-    
-    #fluidRow(
-    #column(width = 12,
-    #dataTableOutput("selectedData")
-    #)
-    
-    
-    
-    
-    
-    
+
+
+#fluidRow(
+#column(width = 12,
+#dataTableOutput("selectedData")
+#)
+
+
+
+
+

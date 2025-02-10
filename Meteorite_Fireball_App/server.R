@@ -16,8 +16,7 @@ function(input, output, session){
       filter(recclass == input$Class_Filter) 
     }
     
-    
-      meteorite_landings_reactive <- meteorite_landings_reactive |> 
+        meteorite_landings_reactive <- meteorite_landings_reactive |> 
         filter(between(year, input$Year_Filter[1], input$Year_Filter[2])) 
     
       
@@ -30,6 +29,26 @@ function(input, output, session){
     
   })
   
+  
+    fireball_bolides_reactive <- reactive({
+      
+      fireball_bolides_reactive <- fireball_bolides
+      
+      fireball_bolides_reactive <- fireball_bolides_reactive |> 
+        filter(between(Altitude_km, input$Altitude_Filter[1], input$Altitude_Filter[2]))  
+        
+      #fireball_bolides_reactive <- fireball_bolides_reactive |> 
+        #filter(between(`Velocity (km/s)`, input$Velocity_Filter[1], input$Velocity_Filter[2], na.rm = FALSE)) 
+        
+      fireball_bolides_reactive <- fireball_bolides_reactive |>  
+        filter(between(Total_Radiated_Energy_J, input$Radiated_Energy_Filter[1], input$Radiated_Energy_Filter[2])) 
+        
+      fireball_bolides_reactive <- fireball_bolides_reactive |> 
+        filter(between(Total_Impact_Energy_kt, input$Impact_Energy_Filter[1], input$Impact_Energy_Filter[2]))
+      
+      return(fireball_bolides_reactive)
+      
+    }) 
   
   output$radiatePlot <- renderPlotly({
     
@@ -58,7 +77,7 @@ function(input, output, session){
   
   output$Landings_Map <- renderPlotly({
     
-    g <- list(
+    g_1 <- list(
       scope = 'world',  # Change to 'world' to show global data
       projection = list(type = 'mercator'),  # Change projection if needed
       showland = TRUE,
@@ -69,18 +88,63 @@ function(input, output, session){
       subunitwidth = 0.5
     )
     
-    fig <- plot_geo(meteorite_landings_reactive(), lat = ~reclat, lon = ~reclong)
+    fig_1 <- plot_geo(meteorite_landings_reactive(), lat = ~reclat, lon = ~reclong) |> 
+      add_markers(
+        size = ~Mass_Log,  # Use the variable for point size
+        sizemax = 50,           # Max size for the largest points
+        color = ~Mass_Log, # Optional: color based on the same variable or another one
+        colorscale = 'Viridis', # Optional: choose a colorscale
+        colorbar = list(title = 'Mass in Grams'), # Optional: Color bar for reference
+        hoverinfo = 'text',  # Information to show on hover
+        text = ~paste('Size:', Mass_Log, '<br>Lat:', reclat, '<br>Lon:', reclong)
+      )
     #fig <- fig %>% add_markers(
       #text = ~paste(city, state, sep = "<br />"),
       #color = ~cnt, symbol = I("circle"), size = I(8), hoverinfo = "text"
     #)
     #fig <- fig %>% colorbar(title = "Meteorite Landings Count")  # Update colorbar title
-    fig <- fig %>% layout(
+    fig_1 <- fig_1 %>% layout(
       title = 'Global Meteorite Landings',  # Updated title
-      geo = g
+      geo = g_1
     )
     
-    fig
+    fig_1
+    
+    
+  })
+  
+  output$Fireball_Bolides_Data <- renderDataTable(
+    datatable(
+      fireball_bolides_reactive(),
+      options = list(pageLength = 5)
+    )
+  )
+  
+  output$Fireball_Bolides_Map <- renderPlotly({
+    
+    g_2 <- list(
+      scope = 'world',  # Change to 'world' to show global data
+      projection = list(type = 'mercator'),  # Change projection if needed
+      showland = TRUE,
+      landcolor = toRGB("gray95"),
+      subunitcolor = toRGB("gray85"),
+      countrycolor = toRGB("gray85"),
+      countrywidth = 0.5,
+      subunitwidth = 0.5
+    )
+    
+    fig_2 <- plot_geo(fireball_bolides_reactive(), lat = ~Latitude, lon = ~Longitude)
+    #fig <- fig %>% add_markers(
+    #text = ~paste(city, state, sep = "<br />"),
+    #color = ~cnt, symbol = I("circle"), size = I(8), hoverinfo = "text"
+    #)
+    #fig <- fig %>% colorbar(title = "Meteorite Landings Count")  # Update colorbar title
+    fig_2 <- fig_2 %>% layout(
+      title = 'Global Fireball and Bolide Reports',  # Updated title
+      geo = g_2
+    )
+    
+    fig_2
     
     
   })
