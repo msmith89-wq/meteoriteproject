@@ -71,9 +71,9 @@ fluidPage(
         column(width = 3,
                sliderInput("Altitude_Filter", "Select an Altitude Range:", min = min(fireball_bolides$Altitude_km, na.rm = TRUE), max = max(fireball_bolides$Altitude_km, na.rm = TRUE), value = c(19, 59)),
                #sliderInput("Velocity_Filter", "Select a Velocity Range:", min = min(fireball_bolides$`Velocity (km/s)`, na.rm = FALSE), max = max(fireball_bolides$`Velocity (km/s)`, na.rm = FALSE), value = c(16, 19)),
-               sliderInput("Radiated_Energy_Filter", "Select an Energy Range:", min = min(fireball_bolides$Total_Radiated_Energy_J, na.rm = TRUE), max = max(fireball_bolides$Total_Radiated_Energy_J, na.rm = TRUE), value = c(2.20e+10, 2.00e+13
+               sliderInput("Radiated_Energy_Filter", "Select a Radiant Energy Range:", min = min(fireball_bolides$Total_Radiated_Energy_J, na.rm = TRUE), max = max(fireball_bolides$Total_Radiated_Energy_J, na.rm = TRUE), value = c(2.20e+10, 2.00e+13
                )),
-               sliderInput("Impact_Energy_Filter", "Select an Energy Range:", min = min(fireball_bolides$Total_Impact_Energy_kt, na.rm = TRUE), max = max(fireball_bolides$Total_Impact_Energy_kt, na.rm = TRUE), value = c(0.073, 33)
+               sliderInput("Impact_Energy_Filter", "Select an Impact Energy Range:", min = min(fireball_bolides$Total_Impact_Energy_kt, na.rm = TRUE), max = max(fireball_bolides$Total_Impact_Energy_kt, na.rm = TRUE), value = c(0.073, 33)
                )),
         column(width = 9, 
                tabsetPanel(
@@ -86,6 +86,39 @@ fluidPage(
                  )
                )
                
+        )
+      )
+    ),
+    
+    tabPanel(
+      'Various EDA Histograms and Bar Charts',
+      fluidRow(
+        tabsetPanel(
+          tabPanel("Histogram of Meteorite Landings over Time",
+                   column(width = 12,
+                          plotOutput('Year_Histogram', height = plot_heights)
+                   )
+                   
+          ),
+          tabPanel("Distribution of Log of Meteorite Landings",
+                   column(width = 12,
+                          plotOutput('Mass_Histogram', height = plot_heights)
+                   )       
+          ),
+          tabPanel("Tree Plot of Distribution Among Meteorite Types",
+                   column(width = 12,
+                          plotOutput('Type_Tree_Plot', height = plot_heights)
+                   )       
+          ),
+          tabPanel("Day_vs_Night_Frequency_of_Fireball_Bolides",
+                   column(width = 6,
+                          plotOutput('Day_vs_Night_Bar_Chart', height = plot_heights)
+                   ),
+                   #column(
+                     
+                   #)
+                   
+          )
         )
       )
     )

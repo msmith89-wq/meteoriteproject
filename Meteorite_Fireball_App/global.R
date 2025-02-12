@@ -4,6 +4,7 @@ library(glue)
 library(DT)
 library(plotly)
 library(leaflet)
+library(treemapify)
 
 meteorite_landings <- read_csv('./data/Meteorite_Landings_20250126.csv')
 
@@ -17,8 +18,16 @@ fireball_bolides <- fireball_bolides |>
          Longitude = str_remove(`Longitude (Deg)`, "(E|W)$") |> as.numeric())
 
 meteorite_landings <- meteorite_landings |> 
-  mutate(Mass_Log = log(`mass (g)`)) |> 
-  filter(Mass_Log > 0)
+  mutate(Mass_Log = log1p(`mass (g)`))
+
+meteorite_type_count <- meteorite_landings |> 
+  count(recclass) |> 
+  rename(count = `n`) |> 
+  arrange(desc(count))
+
+fireball_bolides <- fireball_bolides |> 
+  mutate(Impact_Log = log(Total_Impact_Energy_kt))
+  
 
 plot_heights <- "300px"
 

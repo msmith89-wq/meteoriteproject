@@ -133,7 +133,16 @@ function(input, output, session){
       subunitwidth = 0.5
     )
     
-    fig_2 <- plot_geo(fireball_bolides_reactive(), lat = ~Latitude, lon = ~Longitude)
+    fig_2 <- plot_geo(fireball_bolides_reactive(), lat = ~Latitude, lon = ~Longitude) |> 
+      add_markers(
+        size = ~Impact_Log,  # Use the variable for point size
+        sizemax = 50,           # Max size for the largest points
+        color = ~Impact_Log, # Optional: color based on the same variable or another one
+        colorscale = 'Viridis', # Optional: choose a colorscale
+        colorbar = list(title = 'Impact Energy in kt'), # Optional: Color bar for reference
+        hoverinfo = 'text',  # Information to show on hover
+        text = ~paste('Size:', Impact_Log, '<br>Lat:', Latitude, '<br>Lon:', Longitude)
+      )
     #fig <- fig %>% add_markers(
     #text = ~paste(city, state, sep = "<br />"),
     #color = ~cnt, symbol = I("circle"), size = I(8), hoverinfo = "text"
@@ -147,6 +156,31 @@ function(input, output, session){
     fig_2
     
     
+  })
+  
+  
+  output$Year_Histogram <- renderPlot({
+    meteorite_landings |> 
+      ggplot(aes(x = year)) + geom_histogram() + 
+      scale_x_continuous("Year", limits = c(1700, 2024), seq(1700, 2024, by = 50))
+  })
+  
+  
+  output$Mass_Histogram <- renderPlot({
+    meteorite_landings |> 
+      ggplot(aes(x = log(`mass (g)`))) + geom_histogram()
+  })
+  
+  output$Type_Tree_Plot <- renderPlot({
+    meteorite_type_count |> 
+      slice_max(n = 50, order_by = count) |> 
+      ggplot(aes(area=`count`, fill=`recclass`,
+                           label=`recclass`, subgroup=`recclass`)) +
+                  
+      geom_treemap(layout="squarified") +
+      geom_treemap_text(place = "centre",size = 12) + 
+      labs(title="Sub Grouped Tree Plot using ggplot and treemapify in R") + 
+      theme(legend.position="none")
   })
   
 }  
