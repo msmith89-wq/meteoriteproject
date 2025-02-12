@@ -183,4 +183,9 @@ function(input, output, session){
       theme(legend.position="none")
   })
   
+  output$Day_vs_Night_Bar_Chart <- renderPlot({
+    Day_Night_Tibble |> 
+      ggplot(aes(x = Time_of_Day, y = Proportion)) + geom_col()
+  })
+  
 }  
