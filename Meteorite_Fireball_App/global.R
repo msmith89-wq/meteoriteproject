@@ -64,6 +64,21 @@ Day_Night_Tibble <- tibble(
   Proportion = c(If_Daytime_mean, 1-If_Daytime_mean)
 )
 
+Daytime_Radiant_Energy_mean <- fireball_bolides_sf |> 
+  filter(If_Daytime == 'TRUE') |> 
+  pull(Total_Radiated_Energy_J) |> 
+  sum()
+
+Nighttime_Radiant_Energy_mean <- fireball_bolides_sf |> 
+  filter(If_Daytime == 'FALSE') |>
+  pull(Total_Radiated_Energy_J) |> 
+  sum()
+
+Daytime_Nighttime_Radiant_Energy_Tibble <- tibble(
+  Time_of_Day = c("Day", "Night"),
+  Proportion = c((Daytime_Radiant_Energy_mean/(Daytime_Radiant_Energy_mean + Nighttime_Radiant_Energy_mean)), 1 - (Daytime_Radiant_Energy_mean/(Daytime_Radiant_Energy_mean + Nighttime_Radiant_Energy_mean)))
+)
+
 meteorite_landings <- meteorite_landings |> 
   mutate(Mass_Log = log1p(`mass (g)`)) |> 
   mutate(year = ifelse(name == "Northwest Africa 7701", 2010, year)) 

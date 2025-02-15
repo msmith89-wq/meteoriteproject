@@ -81,7 +81,8 @@ fluidPage(
                           
                  ),
                  tabPanel("Map",
-                          plotlyOutput("Landings_Map")
+                          plotlyOutput("Landings_Map"),
+                          textOutput("Landings_Count")
                  )
                )
                
@@ -106,7 +107,8 @@ fluidPage(
                           
                  ),
                  tabPanel("Map",
-                          plotlyOutput("Fireball_Bolides_Map")
+                          plotlyOutput("Fireball_Bolides_Map"),
+                          textOutput("Bolide_Count")
                  )
                )
                
@@ -143,7 +145,7 @@ fluidPage(
                      p(HTML("According to the tree map above, L6, H5, H6, and L5 meteorites are the most common types of meteorites found on Earth. <br>It appears that both low iron and high iron content meteorites are common, but all these types have undergone a moderate or high level of metamorphosis since their formation."), style = "text-align: center;")
                    )
           ),
-          tabPanel("Day_vs_Night_Frequency_of_Fireball_Bolides",
+          tabPanel("Day vs Night Frequency of Fireball/Bolides",
                    column(width = 12,
                           plotOutput('Day_vs_Night_Bar_Chart', height = plot_heights)
                    ),
@@ -152,8 +154,17 @@ fluidPage(
                      p(HTML("Also a chi-squared test was performed on the results above, and the p-value generated from this test ended up being 2.896e-4, showing that the results above are indeed statistically significant, and supports the alternative hypothesis that fireball/bolides happen more during the night than during the day."), style = "text-align: center;"),
                      p(HTML("This does not, however, prove that this is because of the Sun's gravitational pull. Rather another possible reason for the increased frequency of fireball/bolides at night could be these events being more easily observed at night with no sunlight, but this depends on how exactly the fireball/bolides data was recorded."), style = "text-align: center;")
                    )
-                   
-                   
+          ),
+          tabPanel("Day vs Night Proportions of Radiated Energies of Bolides",
+                   column(width = 12,
+                          plotOutput('Daytime_Nighttime_Radiant_Energy_Bar_Chart', height = plot_heights)
+                   ),
+                   fluidRow(
+                     p(HTML("Lets investigate the possibility of the increased frequency of bolides being at night because of the fact that they would more easily be observed at night because of no sunlight."), style = "text-align: center;"),
+                     p(HTML("All the radiated energies of the daytime bolides were summed and all the radiated energies of the nighttime bolides were summed, and from these daytime and nighttime proportions were calculated and graphed in the bar chart above."), style = "text-align: center;"),
+                     p(HTML("According to the bar chart above, the proportion of the radiated energies of the daytime bolides greatly outweighs the proportion of the nighttime bolides. This shows that even though the daytime bolides happen when sunlight is overwhelming, the average daytime bolide should have enough energy to be recorded or spotted, so this result potentially or more likely rules out the possibility that nighttime bolides are more frequent because they are spotted or recorded easier."), style = "text-align: center;"),
+                     p(HTML("This still does not 100% prove that the Sun's gravitational pull is the reason for bolides happening less during the day, these results just mean that it is more possible."), style = "text-align: center;")
+                   )
                    
           )
         )

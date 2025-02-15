@@ -114,6 +114,10 @@ function(input, output, session){
     
   })
   
+  output$Landings_Count <- renderText({
+    glue("There are {count(meteorite_landings_reactive())} meteorite landings displayed on this map.")
+  })
+  
   output$Fireball_Bolides_Data <- renderDataTable(
     datatable(
       fireball_bolides_reactive(),
@@ -159,6 +163,10 @@ function(input, output, session){
     
   })
   
+  output$Bolide_Count <- renderText({
+    glue("There are {count(fireball_bolides_reactive())} fireballs or bolides displayed on this map.")
+  })
+  
   
   output$Year_Histogram <- renderPlot({
     meteorite_landings |> 
@@ -186,6 +194,11 @@ function(input, output, session){
   
   output$Day_vs_Night_Bar_Chart <- renderPlot({
     Day_Night_Tibble |> 
+      ggplot(aes(x = Time_of_Day, y = Proportion)) + geom_col() + labs(x = 'Time of Day', y = 'Proportion')
+  })
+  
+  output$Daytime_Nighttime_Radiant_Energy_Bar_Chart <- renderPlot({
+    Daytime_Nighttime_Radiant_Energy_Tibble |> 
       ggplot(aes(x = Time_of_Day, y = Proportion)) + geom_col() + labs(x = 'Time of Day', y = 'Proportion')
   })
   
