@@ -7,7 +7,7 @@ library(shiny)
 # Define UI for application that draws a histogram
 fluidPage(
   tabsetPanel(
-    tabPanel("Radiant Energy and Impact Energy vs Altitude",
+    tabPanel("Logarithms of Radiant Energy and Impact Energy vs Altitude",
              
              # Application title
              #titlePanel("Meteorites Data"),
@@ -32,13 +32,13 @@ fluidPage(
              # Show a plot of the generated distribution
              sidebarLayout(
                sidebarPanel(
-                 p("Correlation of Altitude vs Radiant Energy: -0.1454254"),
-                 p("Confidence Interval of Altitude vs Radiant Energy: (-0.37098722  0.09634011)"),
-                 p("p-value of correlation of Altitude vs Radiant Energy: 0.2367"),
+                 p("Correlation of Altitude vs Log of Radiant Energy: -0.2432041"),
+                 p("Confidence Interval of Altitude vs Log of Radiant Energy: (-0.455232089  -0.005073145)"),
+                 p("p-value of correlation of Altitude vs Log of Radiant Energy: 0.04567"),
                  br(),
-                 p("Correlation of Altitude vs Impact Energy: -0.1526532"),
-                 p("Confidence Interval of Altitude vs Impact Energy: (-0.3773443  0.0890116)"),
-                 p("p-value of correlation of Altitude vs Impact Energy: 0.214")
+                 p("Correlation of Altitude vs Log of Impact Energy: -0.2424925"),
+                 p("Confidence Interval of Altitude vs Log of Impact Energy: (-0.454632431  -0.004317007)"),
+                 p("p-value of correlation of Altitude vs Log of Impact Energy: 0.04633")
                ),
                
                mainPanel(
@@ -51,19 +51,43 @@ fluidPage(
                    )
                  ),
                  fluidRow(
-                   p("According to the data above, there appears to be a negative correlation between Altitude and Total Radiated Energy, perhaps this has to do with the atmosphere being less dense at higher altitudes, therefore causing less friction between the atmosphere and meteorites and less radiated energy."),
-                   p("Also, the results of the scatterplot of Altitudes of Fireball/Bolides vs. the logarithm of Calculated Total Impact Energy above seem to be identical to the results of the scatterplot of Altitudes of Fireball/Bolides vs the Logarithm of Total Radiated Energy of Fireball/Bolides. This observation makes sense since radiant energy and impact energy should be directly proportional."),
-                   p("However, as you can see the p-values show there is no statistical significance in the correlations of the radiant energy and impact energy to the altitude of the fireball/bolides.")
+                   p("According to the data above, there appears to be a negative correlation between Altitude and the logarithm of the Total Radiated Energy, perhaps this has to do with the atmosphere being less dense at higher altitudes, therefore causing less friction between the atmosphere and meteorites and less radiated energy."),
+                   p("Also, the results of the scatterplot of Altitudes of Fireball/Bolides vs. the logarithm of the Calculated Total Impact Energy above seem to be identical to the results of the scatterplot of Altitudes of Fireball/Bolides vs the logarithm of Total Radiated Energy of Fireball/Bolides. This observation makes sense since radiant energy and impact energy should be directly proportional."),
+                   p("Also, as you can see the p-values show there is definitely statistical significance in the correlations of the logarithms of radiant energy and impact energy to the altitude of the fireball/bolides.")
                  )
                )
              )
+    ),
+    
+    
+    tabPanel("Log of Impact Energy vs. Log of Radiated Energy of Bolides",
+      sidebarLayout(
+        sidebarPanel(
+          p("Correlation of Log of Impact Energy vs Log of Radiant Energy: 0.999936"),
+          p("Confidence Interval of Altitude vs Log of Radiant Energy: (0.9999030  0.9999577)"),
+          p("p-value of correlation of Altitude vs Log of Radiant Energy: < 2.2e-16")
+       ),
+        
+        mainPanel(
+          fluidRow(
+            column(width = 12,
+                   plotlyOutput("Impact_vs_Radiated_Plot", height=plot_heights)
+            )
+          ),
+          
+          fluidRow(
+            p("According to the scatterplot of the logarithm of Total Impact Energy vs the logarithm of Total Radiated Energy, there appears to be a nearly perfect one to one correlation between the two variables, which of course makes logical sense since the more kinetic energy the meteorite has, the higher the both types of bolide energy would be."),
+            p("Also looking at both the p-value and the confidence interval, the result of the near exactly 1 correlation is statistically significant by quite a bit.")
+          )
+        )
+      )
     ),
     
     tabPanel(
       "Meteorite Landings Dataset",
       fluidRow(
         column(width = 3,
-               sliderInput("Year_Filter", "Select a Year Range:", min = min(meteorite_landings$year, na.rm = TRUE), max = max(meteorite_landings$year, na.rm = TRUE), value = c(2000, 2020), sep = ''),
+               sliderInput("Year_Filter", "Select a Year Range:", min = min(meteorite_landings$year, na.rm = TRUE), max = max(meteorite_landings$year, na.rm = TRUE), value = c(2000, 2004), sep = ''),
                selectInput("Class_Filter", "Select a Class:", choices = c('All', unique(meteorite_landings$recclass))),
                selectInput("Fall_Filter", "Select Fell or Found:", choices = c('All', unique(meteorite_landings$fall)))
         ),

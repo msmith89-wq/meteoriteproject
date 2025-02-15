@@ -54,7 +54,7 @@ function(input, output, session){
     
     plot_2 <- fireball_bolides |> 
       ggplot(aes(x = log(Total_Radiated_Energy_J), y = Altitude_km, text = paste(log(Total_Radiated_Energy_J), Altitude_km))) + 
-      geom_point() + labs(x = 'Total Radiated Energy (J)', y = 'Altitude (km)')
+      geom_point() + labs(x = 'Log of Total Radiated Energy', y = 'Altitude (km)')
     
     ggplotly(plot_2, tooltip = 'text')
   })
@@ -63,9 +63,18 @@ function(input, output, session){
     
     plot <- fireball_bolides |> 
       ggplot(aes(x = log(Total_Impact_Energy_kt), y = Altitude_km, text = paste(log(Total_Impact_Energy_kt), Altitude_km))) + 
-      geom_point() + labs(x = 'Total Impact Energy (kt)', y = 'Altitude (km)')
+      geom_point() + labs(x = 'Log of Total Impact Energy', y = 'Altitude (km)')
     
     ggplotly(plot, tooltip='text')
+  })
+  
+  output$Impact_vs_Radiated_Plot <- renderPlotly({
+    
+    plot3 <- fireball_bolides |> 
+      ggplot(aes(x = log(Total_Radiated_Energy_J), y = log(Total_Impact_Energy_kt), text = paste(log(Total_Radiated_Energy_J), log(Total_Impact_Energy_kt)))) +
+      geom_point() + labs(x = 'Log of Total Radiated Energy', y = 'Log of Total Impact Energy')
+    
+    ggplotly(plot3, tooltip = 'text')
   })
   
   output$Landings_Data <- renderDataTable(
