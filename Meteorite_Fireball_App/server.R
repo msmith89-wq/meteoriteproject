@@ -41,7 +41,7 @@ function(input, output, session){
         #filter(between(`Velocity (km/s)`, input$Velocity_Filter[1], input$Velocity_Filter[2], na.rm = FALSE)) 
         
       fireball_bolides_reactive <- fireball_bolides_reactive |>  
-        filter(between(Total_Radiated_Energy_J, input$Radiated_Energy_Filter[1], input$Radiated_Energy_Filter[2])) 
+        filter(between(log(Total_Radiated_Energy_J), input$Radiated_Energy_Filter[1], input$Radiated_Energy_Filter[2])) 
         
       fireball_bolides_reactive <- fireball_bolides_reactive |> 
         filter(between(Total_Impact_Energy_kt, input$Impact_Energy_Filter[1], input$Impact_Energy_Filter[2]))
@@ -54,7 +54,7 @@ function(input, output, session){
     
     plot_2 <- fireball_bolides |> 
       ggplot(aes(x = log(Total_Radiated_Energy_J), y = Altitude_km, text = paste(log(Total_Radiated_Energy_J), Altitude_km))) + 
-      geom_point() 
+      geom_point() + labs(x = 'Total Radiated Energy (J)', y = 'Altitude (km)')
     
     ggplotly(plot_2, tooltip = 'text')
   })
@@ -63,7 +63,7 @@ function(input, output, session){
     
     plot <- fireball_bolides |> 
       ggplot(aes(x = log(Total_Impact_Energy_kt), y = Altitude_km, text = paste(log(Total_Impact_Energy_kt), Altitude_km))) + 
-      geom_point()
+      geom_point() + labs(x = 'Total Impact Energy (kt)', y = 'Altitude (km)')
     
     ggplotly(plot, tooltip='text')
   })
@@ -96,7 +96,8 @@ function(input, output, session){
         colorscale = 'Viridis', # Optional: choose a colorscale
         colorbar = list(title = 'Mass in Grams'), # Optional: Color bar for reference
         hoverinfo = 'text',  # Information to show on hover
-        text = ~paste('Size:', Mass_Log, '<br>Lat:', reclat, '<br>Lon:', reclong)
+        text = ~paste('Size:', Mass_Log, '<br>Lat:', reclat, '<br>Lon:', reclong),
+        opacity = 0.5
       )
     #fig <- fig %>% add_markers(
       #text = ~paste(city, state, sep = "<br />"),
@@ -185,7 +186,7 @@ function(input, output, session){
   
   output$Day_vs_Night_Bar_Chart <- renderPlot({
     Day_Night_Tibble |> 
-      ggplot(aes(x = Time_of_Day, y = Proportion)) + geom_col()
+      ggplot(aes(x = Time_of_Day, y = Proportion)) + geom_col() + labs(x = 'Time of Day', y = 'Proportion')
   })
   
 }  

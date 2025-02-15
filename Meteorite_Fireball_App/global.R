@@ -65,7 +65,9 @@ Day_Night_Tibble <- tibble(
 )
 
 meteorite_landings <- meteorite_landings |> 
-  mutate(Mass_Log = log1p(`mass (g)`))
+  mutate(Mass_Log = log1p(`mass (g)`)) |> 
+  mutate(year = ifelse(name == "Northwest Africa 7701", 2010, year)) 
+  
 
 meteorite_type_count <- meteorite_landings |> 
   count(recclass) |> 
